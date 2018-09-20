@@ -28,10 +28,10 @@ async function waitForStatusUpdate(uuid, currentStatus, nextStatus, token, expec
     await Promise.delay(delayMS);
 
     res = await serverRequest
-      .get(`/mythril/v1/analysis/${uuid}`)
+      .get(`/v1/analyses/${uuid}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(httpStatus.OK);
-    const result = res.body.result;
+    const result = res.body.status;
     if (result !== currentStatus) {
       expect(result).toBe(nextStatus);
       break;
@@ -63,7 +63,7 @@ async function getUserFromDatabase(email) {
     const userCollection = await client.db().collection('users');
     user = await userCollection.findOne({email_lowered: email.toLowerCase()});
   } finally {
-    await client.logout();
+    await client.close();
   }
   return user;
 }
@@ -101,7 +101,7 @@ async function getJwtFromDatabase(refreshToken, userId) {
 async function registerUser() {
   const email = generateEmailAddress();
   await serverRequest
-    .post('/mythril/v1/users')
+    .post('/v1/auth/user')
     .send({
       firstName: 'David',
       gReCaptcha: 'DUMMY_TOKEN',
@@ -177,7 +177,7 @@ async function setUserProperty(email, values) {
     const userCollection = await client.db().collection('users');
     user = await userCollection.findOneAndUpdate({email_lowered: email.toLowerCase()}, {$set: values});
   } finally {
-    await client.logout();
+    await client.close();
   }
   return user;
 }
