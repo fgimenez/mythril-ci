@@ -89,11 +89,10 @@ async function getJwtFromDatabase(refreshToken, userId) {
       jwt = await jwtCollection.findOne({userId});
     }
   } finally {
-    await client.logout();
+    await client.close();
   }
   return jwt;
 }
-
 
 /**
  * Generate new user email and register the user
@@ -101,7 +100,7 @@ async function getJwtFromDatabase(refreshToken, userId) {
 async function registerUser() {
   const email = generateEmailAddress();
   await serverRequest
-    .post('/v1/auth/user')
+    .post('/v1/users')
     .send({
       firstName: 'David',
       gReCaptcha: 'DUMMY_TOKEN',
@@ -119,7 +118,7 @@ async function registerUser() {
 async function activateUser(email) {
   const user = await getUserFromDatabase(email);
   await serverRequest
-    .post('/mythril/v1/users/' + user._id + '/activate')
+    .post(`/v1/users/${user._id}/activate`)
     .send({
       verificationCode: user.verificationCode,
       password: PASSWORD,
@@ -142,7 +141,7 @@ async function registerAndActivateUser() {
  */
 async function loginUser(email) {
   const res = await serverRequest
-    .post('/mythril/v1/auth/login')
+    .post('/v1/auth/login')
     .send({
       email,
       password: PASSWORD,
@@ -203,5 +202,5 @@ export {
   loginUser,
   registerUser,
   registerAndActivateUser,
-  PASSWORD
+  PASSWORD,
 };

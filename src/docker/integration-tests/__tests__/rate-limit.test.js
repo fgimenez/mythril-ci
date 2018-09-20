@@ -92,8 +92,8 @@ describe('Rate limit', () => {
   });
   it('stress test (race condition)', async () => {
     await makeUserAdmin(email);
-    const token = await loginUser(email);
-    const numberOfRequest = 30;
+    await loginUser(email);
+    const numberOfRequest = 5;
     // eslint-disable-next-line
     for (let i = 0; i < numberOfRequest; i++) {
       await serverRequest

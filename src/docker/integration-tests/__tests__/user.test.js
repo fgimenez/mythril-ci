@@ -11,13 +11,11 @@ import {
   getJwtFromDatabase,
 } from '../utils';
 
-describe('/mythril/v1/', () => {
-
+describe('/v1/', () => {
   describe('register', () => {
-
     it('invalid email', async () => {
       const res = await serverRequest
-        .post('/mythril/v1/users')
+        .post('/v1/users')
         .send({
           firstName: 'David',
           lastName: 'Martin',
@@ -31,7 +29,7 @@ describe('/mythril/v1/', () => {
 
     it('another invalid email', async () => {
       const res = await serverRequest
-        .post('/mythril/v1/users')
+        .post('/v1/users')
         .send({
           firstName: 'David',
           lastName: 'Martin',
@@ -46,7 +44,7 @@ describe('/mythril/v1/', () => {
     it('invalid terms', async () => {
       const email = generateEmailAddress();
       const res = await serverRequest
-        .post('/mythril/v1/users')
+        .post('/v1/users')
         .send({
           firstName: 'David',
           lastName: 'Martin',
@@ -60,7 +58,7 @@ describe('/mythril/v1/', () => {
 
     it('successful registration', async () => {
       const res = await serverRequest
-        .post('/mythril/v1/users')
+        .post('/v1/users')
         .send({
           firstName: 'David',
           gReCaptcha: 'DummyReCaptcha',
@@ -74,8 +72,8 @@ describe('/mythril/v1/', () => {
 
     it('fail on email exists', async () => {
       const email = await registerAndActivateUser();
-      const res = await serverRequest
-        .post('/mythril/v1/users')
+      await serverRequest
+        .post('/v1/users')
         .send({
           firstName: 'David',
           gReCaptcha: 'DummyReCaptcha',
@@ -89,8 +87,8 @@ describe('/mythril/v1/', () => {
     it('fail registration if non-admin user tries to register', async () => {
       const email = await registerAndActivateUser();
       const token = await loginUser(email);
-      const res = await serverRequest
-        .post('/mythril/v1/users')
+      await serverRequest
+        .post('/v1/users')
         .set('Authorization', `Bearer ${token}`)
         .send({
           firstName: 'David',
@@ -107,7 +105,7 @@ describe('/mythril/v1/', () => {
       await makeUserAdmin(email);
       const token = await loginUser(email);
       const res = await serverRequest
-        .post('/mythril/v1/users')
+        .post('/v1/users')
         .set('Authorization', `Bearer ${token}`)
         .send({
           firstName: 'David',
@@ -122,11 +120,10 @@ describe('/mythril/v1/', () => {
   });
 
   describe('activate account', () => {
-
     it('fail on userId does not exist', async () => {
-      const email = await registerUser();
-      const res = await serverRequest
-        .post('/mythril/v1/users/randomUserId/activate')
+      await registerUser();
+      await serverRequest
+        .post('/v1/users/randomUserId/activate')
         .send({
           password: 'Delta@123',
           verificationCode: '123123123',
@@ -136,8 +133,8 @@ describe('/mythril/v1/', () => {
     it('fail on invalid password', async () => {
       const email = await registerUser();
       const user = await getUserFromDatabase(email);
-      const res = await serverRequest
-        .post(`/mythril/v1/users/${user._id}/activate`)
+      await serverRequest
+        .post(`/v1/users/${user._id}/activate`)
         .send({
           password: '123',
           verificationCode: user.verificationCode,
@@ -147,8 +144,8 @@ describe('/mythril/v1/', () => {
     it('successful verification', async () => {
       const email = await registerUser();
       const user = await getUserFromDatabase(email);
-      const res = await serverRequest
-        .post(`/mythril/v1/users/${user._id}/activate`)
+      await serverRequest
+        .post(`/v1/users/${user._id}/activate`)
         .send({
           password: 'Delta@123',
           verificationCode: user.verificationCode,
@@ -158,8 +155,8 @@ describe('/mythril/v1/', () => {
     it('fail on reactivation', async () => {
       const email = await registerAndActivateUser();
       const user = await getUserFromDatabase(email);
-      const res = await serverRequest
-        .post(`/mythril/v1/users/${user._id}/activate`)
+      await serverRequest
+        .post(`/v1/users/${user._id}/activate`)
         .send({
           password: 'Delta@123',
           verificationCode: user.verificationCode,
@@ -168,10 +165,9 @@ describe('/mythril/v1/', () => {
   });
 
   describe('recover account', () => {
-
     it('Success even when email is not registered', async () => {
-      const res = await serverRequest
-        .post('/mythril/v1/users/recover')
+      await serverRequest
+        .post('/v1/users/recover')
         .send({
           email: generateEmailAddress(),
         }).expect(httpStatus.OK);
@@ -182,10 +178,8 @@ describe('/mythril/v1/', () => {
       let user = await getUserFromDatabase(email);
       expect(user.verificationCode).toBeUndefined();
       const res = await serverRequest
-        .post(`/mythril/v1/users/recover`)
-        .send({
-          email
-        })
+        .post('/v1/users/recover')
+        .send({email});
       expect(res.status).toBe(httpStatus.OK);
       user = await getUserFromDatabase(email);
       expect(user.verificationCode).toBeDefined();
@@ -193,11 +187,10 @@ describe('/mythril/v1/', () => {
   });
 
   describe('login', () => {
-
     it('fail if wrong email is given', async () => {
-      const email = await registerAndActivateUser();
-      const res = await  serverRequest
-        .post(`/mythril/v1/auth/login`)
+      await registerAndActivateUser();
+      await serverRequest
+        .post('/v1/auth/login')
         .send({
           email: generateEmailAddress(),
           password: PASSWORD,
@@ -206,8 +199,8 @@ describe('/mythril/v1/', () => {
 
     it('fail if wrong password is given', async () => {
       const email = await registerAndActivateUser();
-      const res = await  serverRequest
-        .post(`/mythril/v1/auth/login`)
+      await serverRequest
+        .post('/v1/auth/login')
         .send({
           email,
           password: 'asdasd@12312D',
@@ -216,54 +209,53 @@ describe('/mythril/v1/', () => {
 
     it('must return tokens on success', async () => {
       const email = await registerAndActivateUser();
-      const res = await  serverRequest
-        .post(`/mythril/v1/auth/login`)
+      const res = await serverRequest
+        .post('/v1/auth/login')
         .send({
           email,
           password: PASSWORD,
         }).expect(httpStatus.OK);
-        expect(res.body).toHaveProperty('accessToken');
-        expect(res.body).toHaveProperty('refreshToken');
+      expect(res.body).toHaveProperty('accessToken');
+      expect(res.body).toHaveProperty('refreshToken');
     });
 
     it('must allow multiple active jwts', async () => {
       const email = await registerAndActivateUser();
       const user = await getUserFromDatabase(email);
-      const tokens1 = (await  serverRequest
-        .post(`/mythril/v1/auth/login`)
+      const tokens1 = (await serverRequest
+        .post('/v1/auth/login')
         .send({
           email,
           password: PASSWORD,
         })).body;
-      const tokens2 = (await  serverRequest
-        .post(`/mythril/v1/auth/login`)
+      const tokens2 = (await serverRequest
+        .post('/v1/auth/login')
         .send({
           email,
           password: PASSWORD,
         })).body;
-        const jwt1 = await getJwtFromDatabase(tokens1.refreshToken);
-        const jwt2 = await getJwtFromDatabase(tokens2.refreshToken);
-        expect(jwt1).toBeDefined();
-        expect(jwt1.userId).toBe(user._id);
-        expect(jwt2).toBeDefined();
-        expect(jwt2.userId).toBe(user._id);
+      const jwt1 = await getJwtFromDatabase(tokens1.refreshToken);
+      const jwt2 = await getJwtFromDatabase(tokens2.refreshToken);
+      expect(jwt1).toBeDefined();
+      expect(jwt1.userId).toBe(user._id);
+      expect(jwt2).toBeDefined();
+      expect(jwt2.userId).toBe(user._id);
     });
   });
 
   describe('logout', () => {
-
     it('fail on invalid access token', async () => {
       const email = await registerAndActivateUser();
-      const token = await loginUser(email);
+      await loginUser(email);
       await serverRequest
-        .post('/mythril/v1/auth/logout')
+        .post('/v1/auth/logout')
         .expect(httpStatus.UNAUTHORIZED);
     });
 
     it('delete jwt from database on success', async () => {
       const email = await registerAndActivateUser();
-      const tokens = (await  serverRequest
-        .post(`/mythril/v1/auth/login`)
+      const tokens = (await serverRequest
+        .post('/v1/auth/login')
         .send({
           email,
           password: PASSWORD,
@@ -272,7 +264,7 @@ describe('/mythril/v1/', () => {
         getJwtFromDatabase(tokens.refreshToken)
       ).resolves.toBeDefined();
       await serverRequest
-        .post('/mythril/v1/auth/logout')
+        .post('/v1/auth/logout')
         .set('Authorization', `Bearer ${tokens.accessToken}`)
         .expect(httpStatus.OK);
       await expect(
@@ -288,8 +280,8 @@ describe('/mythril/v1/', () => {
 
     beforeEach(async () => {
       email = await registerAndActivateUser();
-      const tokens = (await  serverRequest
-        .post(`/mythril/v1/auth/login`)
+      const tokens = (await serverRequest
+        .post('/v1/auth/login')
         .send({
           email,
           password: PASSWORD,
@@ -300,7 +292,7 @@ describe('/mythril/v1/', () => {
 
     it('fail on incorrect access token', async () => {
       await serverRequest
-        .post('/mythril/v1/auth/refresh')
+        .post('/v1/auth/refresh')
         .send({
           accessToken: 'delta',
           refreshToken,
@@ -309,7 +301,7 @@ describe('/mythril/v1/', () => {
 
     it('fail on incorrect refresh token', async () => {
       await serverRequest
-        .post('/mythril/v1/auth/refresh')
+        .post('/v1/auth/refresh')
         .send({
           accessToken,
           refreshToken: 'delta',
@@ -318,7 +310,7 @@ describe('/mythril/v1/', () => {
 
     it('must return new tokens on success', async () => {
       const res = await serverRequest
-        .post('/mythril/v1/auth/refresh')
+        .post('/v1/auth/refresh')
         .send({
           accessToken,
           refreshToken,
@@ -328,8 +320,8 @@ describe('/mythril/v1/', () => {
     });
 
     it('must revoke the old jwt from database', async () => {
-      const res = await serverRequest
-        .post('/mythril/v1/auth/refresh')
+      await serverRequest
+        .post('/v1/auth/refresh')
         .send({
           accessToken,
           refreshToken,
@@ -340,14 +332,14 @@ describe('/mythril/v1/', () => {
     });
 
     it('must fail on reusing the old refresh tokens', async () => {
-      const res = await serverRequest
-        .post('/mythril/v1/auth/refresh')
+      await serverRequest
+        .post('/v1/auth/refresh')
         .send({
           accessToken,
           refreshToken,
         }).expect(httpStatus.OK);
       await serverRequest
-        .post('/mythril/v1/auth/refresh')
+        .post('/v1/auth/refresh')
         .send({
           accessToken,
           refreshToken,
@@ -371,13 +363,13 @@ describe('/mythril/v1/', () => {
         firstName: 'testfirstname',
         lastName: 'testlastname',
         termsId: 'no_terms',
-        type: ['user']
+        type: ['user'],
       };
     });
 
     it('fail if not admin', async () => {
       await serverRequest
-        .put(`/mythril/v1/users/${otherUser._id}`)
+        .put(`/v1/users/${otherUser._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(data)
         .expect(httpStatus.FORBIDDEN);
@@ -387,7 +379,7 @@ describe('/mythril/v1/', () => {
       await makeUserAdmin(email);
       token = await loginUser(email);
       await serverRequest
-        .put(`/mythril/v1/users/${otherUser._id}`)
+        .put(`/v1/users/${otherUser._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(data)
         .expect(httpStatus.OK);
@@ -398,7 +390,7 @@ describe('/mythril/v1/', () => {
       token = await loginUser(email);
       data.termsId = '123';
       await serverRequest
-        .put(`/mythril/v1/users/${otherUser._id}`)
+        .put(`/v1/users/${otherUser._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(data)
         .expect(httpStatus.BAD_REQUEST);
@@ -409,7 +401,7 @@ describe('/mythril/v1/', () => {
       token = await loginUser(email);
       data.type = ['delta'];
       await serverRequest
-        .put(`/mythril/v1/users/${otherUser._id}`)
+        .put(`/v1/users/${otherUser._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(data)
         .expect(httpStatus.BAD_REQUEST);
@@ -423,7 +415,7 @@ describe('/mythril/v1/', () => {
       await makeUserAdmin(email);
       token = await loginUser(email);
       await serverRequest
-        .put(`/mythril/v1/users/${otherUser._id}`)
+        .put(`/v1/users/${otherUser._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(data)
         .expect(httpStatus.OK);
@@ -436,7 +428,7 @@ describe('/mythril/v1/', () => {
       await makeUserAdmin(email);
       token = await loginUser(email);
       await serverRequest
-        .put(`/mythril/v1/users/${otherUser._id}`)
+        .put(`/v1/users/${otherUser._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(data)
         .expect(httpStatus.OK);
@@ -462,7 +454,7 @@ describe('/mythril/v1/', () => {
       const otherEmail = await registerAndActivateUser();
       token = await loginUser(otherEmail);
       await serverRequest
-        .get('/mythril/v1/users')
+        .get('/v1/users')
         .set('Authorization', `Bearer ${token}`)
         .query({offset: 0, email: ''})
         .expect(httpStatus.FORBIDDEN);
@@ -470,7 +462,7 @@ describe('/mythril/v1/', () => {
 
     it('fail if invalid offset', async () => {
       await serverRequest
-        .get('/mythril/v1/users')
+        .get('/v1/users')
         .set('Authorization', `Bearer ${token}`)
         .query({offset: -1, email: ''})
         .expect(httpStatus.BAD_REQUEST);
@@ -478,7 +470,7 @@ describe('/mythril/v1/', () => {
 
     it('return user data on success', async () => {
       const res = (await serverRequest
-        .get('/mythril/v1/users')
+        .get('/v1/users')
         .set('Authorization', `Bearer ${token}`)
         .query({offset: 0, email})
         .expect(httpStatus.OK)).body;
@@ -498,7 +490,7 @@ describe('/mythril/v1/', () => {
       const newEmail = generateEmailAddress();
       for (let i = 0; i < 100; i++) {
         await serverRequest
-          .post('/mythril/v1/users')
+          .post('/v1/users')
           .send({
             firstName: 'David',
             lastName: 'Martin',
@@ -507,7 +499,7 @@ describe('/mythril/v1/', () => {
           });
       }
       const res = (await serverRequest
-        .get('/mythril/v1/users')
+        .get('/v1/users')
         .set('Authorization', `Bearer ${token}`)
         .query({offset: 0, email: newEmail})
         .expect(httpStatus.OK)).body;
@@ -519,7 +511,7 @@ describe('/mythril/v1/', () => {
       const newEmail = generateEmailAddress();
       for (let i = 0; i < 87; i++) {
         await serverRequest
-          .post('/mythril/v1/users')
+          .post('/v1/users')
           .send({
             firstName: 'David',
             lastName: 'Martin',
@@ -528,7 +520,7 @@ describe('/mythril/v1/', () => {
           });
       }
       const res = (await serverRequest
-        .get('/mythril/v1/users')
+        .get('/v1/users')
         .set('Authorization', `Bearer ${token}`)
         .query({offset: 10, email: newEmail})
         .expect(httpStatus.OK)).body;
