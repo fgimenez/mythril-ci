@@ -35,5 +35,9 @@
   "dependencies": {
     "config": "^1.31.0",
     "uuid": "^3.3.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": ["/node_modules/", "/config/"]
   }
 }

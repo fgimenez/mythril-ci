@@ -1,9 +1,21 @@
 import httpStatus from 'http-status';
-import {serverRequest, getUserFromDatabase, setUserProperty, makeUserUnlimited, getValidCredential} from '../utils';
+import {
+  serverRequest,
+  getUserFromDatabase,
+  setUserProperty,
+  makeUserAdmin,
+  loginUser,
+  registerAndActivateUser
+} from '../utils';
 
 describe('Rate limit', () => {
+  let email;
+  let token;
+  beforeEach(async () => {
+    email = await registerAndActivateUser();
+    token = await loginUser(email);
+  });
   it('5 min limit', async () => {
-    const {email, token} = await getValidCredential();
     await serverRequest
       .get('/mythril/v1/analysis/notexist')
       .set('Authorization', `Bearer ${token}`)
@@ -29,7 +41,6 @@ describe('Rate limit', () => {
       .expect(httpStatus.BAD_REQUEST);
   });
   it('1 hour limit', async () => {
-    const {email, token} = await getValidCredential();
     await serverRequest
       .get('/mythril/v1/analysis/notexist')
       .set('Authorization', `Bearer ${token}`)
@@ -55,7 +66,6 @@ describe('Rate limit', () => {
       .expect(httpStatus.BAD_REQUEST);
   });
   it('1 day limit', async () => {
-    const {email, token} = await getValidCredential();
     await serverRequest
       .get('/mythril/v1/analysis/notexist')
       .set('Authorization', `Bearer ${token}`)
@@ -81,8 +91,8 @@ describe('Rate limit', () => {
       .expect(httpStatus.BAD_REQUEST);
   });
   it('stress test (race condition)', async () => {
-    const {email, token} = await getValidCredential();
-    await makeUserUnlimited(email);
+    await makeUserAdmin(email);
+    const token = await loginUser(email);
     const numberOfRequest = 30;
     // eslint-disable-next-line
     for (let i = 0; i < numberOfRequest; i++) {

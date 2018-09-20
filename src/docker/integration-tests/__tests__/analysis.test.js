@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import httpStatus from 'http-status';
-import {serverRequest, makeUserUnlimited, waitForStatusUpdate, getValidCredential} from '../utils';
+import {serverRequest, makeUserAdmin, waitForStatusUpdate, loginUser, registerAndActivateUser} from '../utils';
 import submissionWithIssues from './submissionWithIssues';
 
 describe('/mythril/v1/analysis', () => {
@@ -34,9 +34,9 @@ describe('/mythril/v1/analysis', () => {
     });
 
     it('no issues', async () => {
-      const {email, token} = await getValidCredential();
-      await makeUserUnlimited(email);
-
+      const email = await registerAndActivateUser();
+      await makeUserAdmin(email);
+      const token = await loginUser(email);
       let res = await serverRequest
         .post('/mythril/v1/analysis')
         .set('Authorization', `Bearer ${token}`)
@@ -63,8 +63,9 @@ describe('/mythril/v1/analysis', () => {
     });
 
     it('error', async () => {
-      const {email, token} = await getValidCredential();
-      await makeUserUnlimited(email);
+      const email = await registerAndActivateUser();
+      await makeUserAdmin(email);
+      const token = await loginUser(email);
 
       const res = await serverRequest
         .post('/mythril/v1/analysis')
@@ -82,8 +83,9 @@ describe('/mythril/v1/analysis', () => {
     });
 
     it('Submit multiple (no issues)', async () => {
-      const {email, token} = await getValidCredential();
-      await makeUserUnlimited(email);
+      const email = await registerAndActivateUser();
+      await makeUserAdmin(email);
+      const token = await loginUser(email);
 
       let res = await serverRequest
         .post('/mythril/v1/analysis')
@@ -110,8 +112,9 @@ describe('/mythril/v1/analysis', () => {
     });
 
     it('issues', async () => {
-      const {email, token} = await getValidCredential();
-      await makeUserUnlimited(email);
+      const email = await registerAndActivateUser();
+      await makeUserAdmin(email);
+      const token = await loginUser(email);
 
       let res = await serverRequest
         .post('/mythril/v1/analysis')
