@@ -17,7 +17,7 @@ The addition or multiplication may result in a value higher than the maximum rep
     "contract": "MAIN",
     "description": "This contract executes a message call to the address of the transaction sender. Generally, it is not recommended to call user-supplied addresses using Solidity's call() construct. Note that attackers might leverage reentrancy attacks to exploit race conditions or manipulate this contract's state.",
     "function": "_function_0x2e1a7d4d",
-    "swc_id": "107"
+    "swc_id": "107",
     "title": "Message call to external contract",
     "type": "Warning",
   },
@@ -66,7 +66,7 @@ Call at address: 823
     "contract": "MAIN",
     "description": "The return value of an external call is not checked. Note that execution continue even if the called contract throws.",
     "function": "_function_0x2e1a7d4d",
-     "swc_id": "104",
+    "swc_id": "104",
     "title": "Unchecked CALL return value",
     "type": "Informational",
   },
