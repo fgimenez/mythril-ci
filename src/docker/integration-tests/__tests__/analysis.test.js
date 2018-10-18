@@ -10,27 +10,6 @@ describe('/v1/analyses', () => {
     beforeEach(() => {
       data = {
         contractName: 'TestMe',
-        abi: [
-          {
-            constant: false,
-            inputs: [
-              {
-                name: 'first_input',
-                type: 'uint256',
-              },
-            ],
-            name: 'lol',
-            outputs: [
-              {
-                name: '',
-                type: 'uint256',
-              },
-            ],
-            payable: false,
-            stateMutability: 'nonpayable',
-            type: 'function',
-          },
-        ],
         bytecode: '00',
         deployedBytecode: '00',
         sourceMap: '25:78:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:78:1;;;;;;;',
