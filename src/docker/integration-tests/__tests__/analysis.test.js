@@ -57,7 +57,6 @@ describe('/v1/analyses', () => {
       await makeUserUnlimited(email);
 
       data.deployedBytecode = 'abcc';
-      console.log('data:', data)
       let res = await serverRequest
         .post('/v1/analyses')
         .set('Authorization', `Bearer ${token}`)
