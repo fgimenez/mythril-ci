@@ -5,9 +5,9 @@ Array [
   Object {
     "address": 499,
     "contract": "MAIN",
-    "description": "A possible integer overflow exists in the function \`fallback\`.
+    "description": "A possible integer overflow exists in the function \`_function_0x00362a95\`.
 The addition or multiplication may result in a value higher than the maximum representable integer.",
-    "function": "fallback",
+    "function": "_function_0x00362a95",
     "swc_id": "101",
     "title": "Integer Overflow",
     "type": "Warning",
@@ -24,7 +24,7 @@ The addition or multiplication may result in a value higher than the maximum rep
   Object {
     "address": 648,
     "contract": "MAIN",
-    "description": "Multiple sends exist in one transaction, try to isolate each external call into its own transaction. As external calls can fail accidentally or deliberately.
+    "description": "Multiple sends exist in one transaction. Try to isolate each external call into its own transaction, as external calls can fail accidentally or deliberately.
 Consecutive calls: 
 Call at address: 823
 Call at address: 823
