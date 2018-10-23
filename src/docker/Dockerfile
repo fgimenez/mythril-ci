@@ -1,7 +1,7 @@
 # Dockerfile for Docker image of Mythril eco-system.
 
 # From the latest long-term support version of Ubuntu.
-FROM ubuntu:rolling
+FROM ubuntu:bionic
 
 # Sets non-interactive mode, so that there is no interactive prompts during
 # the build.
