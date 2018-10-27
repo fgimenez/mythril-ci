@@ -5,8 +5,8 @@ Array [
   Object {
     "address": 499,
     "contract": "MAIN",
-    "description": "description": "The arithmetic operation can result in integer overflow.
-    ",
+    "description": "The arithmetic operation can result in integer overflow.
+",
     "function": "_function_0x00362a95",
     "swc_id": "101",
     "title": "Integer Overflow",
