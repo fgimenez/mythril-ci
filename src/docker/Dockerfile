@@ -136,3 +136,8 @@ RUN \
     geth account new --password ./ethereum.password; \
     timeout --preserve-status 10m geth --syncmode full; \
   fi
+
+RUN git clone https://${GITHUB_BOT_TOKEN}@github.com/ConsenSys/maru.git && \
+  cd maru && \
+  npm run build:prod && \
+  npm i -g
