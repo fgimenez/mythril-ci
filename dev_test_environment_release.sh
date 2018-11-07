@@ -9,7 +9,9 @@ if [ ! -e ./src/docker/.cache ];
   then mkdir ./src/docker/.cache;
 fi
 
-docker build -t ${VERSION_TAG} src/docker/.
+docker build -t ${VERSION_TAG} \
+       --build-arg GITHUB_BOT_TOKEN=$GITHUB_BOT_TOKEN \
+       src/docker/.
 docker tag ${VERSION_TAG} ${LATEST_TAG}
 
 if [ ! -e ./src/docker/.cache/.ethereum ];

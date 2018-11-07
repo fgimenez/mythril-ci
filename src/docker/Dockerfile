@@ -53,6 +53,7 @@ RUN \
   rm -rf /var/lib/apt/lists/*;
 
 # install maru
+ARG GITHUB_BOT_TOKEN
 RUN git clone https://${GITHUB_BOT_TOKEN}@github.com/ConsenSys/maru.git && \
   cd maru && \
   npm run build:prod && \
