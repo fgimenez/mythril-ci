@@ -52,6 +52,12 @@ RUN \
   apt-get clean; \
   rm -rf /var/lib/apt/lists/*;
 
+# install maru
+RUN git clone https://${GITHUB_BOT_TOKEN}@github.com/ConsenSys/maru.git && \
+  cd maru && \
+  npm run build:prod && \
+  npm i -g
+
 # Installs pyenv to enable installation of several python versions.
 ENV PATH="/root/.pyenv/bin:$PATH"
 RUN git clone https://github.com/pyenv/pyenv.git ~/.pyenv; \
@@ -136,8 +142,3 @@ RUN \
     geth account new --password ./ethereum.password; \
     timeout --preserve-status 10m geth --syncmode full; \
   fi
-
-RUN git clone https://${GITHUB_BOT_TOKEN}@github.com/ConsenSys/maru.git && \
-  cd maru && \
-  npm run build:prod && \
-  npm i -g
