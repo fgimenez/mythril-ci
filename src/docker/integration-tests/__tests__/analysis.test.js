@@ -18,8 +18,8 @@ describe('/v1/analyses', () => {
           'maincontract.sol',
         ],
         sources: {
-          'basecontract.sol': '[... escaped source code ...]',
-          'maincontract.sol': '[... escaped source code ...]',
+          'basecontract.sol': 'pragma solidity 0.4.25; contract Test {}',
+          'maincontract.sol': 'pragma solidity 0.4.25; contract Test {}',
         },
         analysisMode: 'full',
         abi: [],

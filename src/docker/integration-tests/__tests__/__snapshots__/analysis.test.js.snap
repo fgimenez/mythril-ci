@@ -10,6 +10,7 @@ Array [
     "function": "_function_0x00362a95",
     "swc_id": "101",
     "title": "Integer Overflow",
+    "tool": "mythril",
     "type": "Warning",
   },
   Object {
@@ -19,6 +20,7 @@ Array [
     "function": "_function_0x2e1a7d4d",
     "swc_id": "107",
     "title": "Message call to external contract",
+    "tool": "mythril",
     "type": "Warning",
   },
   Object {
@@ -32,6 +34,7 @@ Call at address: 823
     "function": "_function_0x2e1a7d4d",
     "swc_id": "113",
     "title": "Multiple Calls",
+    "tool": "mythril",
     "type": "Informational",
   },
   Object {
@@ -41,6 +44,7 @@ Call at address: 823
     "function": "_function_0x2e1a7d4d",
     "swc_id": "107",
     "title": "State change after external call",
+    "tool": "mythril",
     "type": "Warning",
   },
   Object {
@@ -50,6 +54,7 @@ Call at address: 823
     "function": "_function_0x2e1a7d4d",
     "swc_id": "104",
     "title": "Unchecked CALL return value",
+    "tool": "mythril",
     "type": "Informational",
   },
   Object {
@@ -59,6 +64,7 @@ Call at address: 823
     "function": "_function_0x2e1a7d4d",
     "swc_id": "107",
     "title": "Message call to external contract",
+    "tool": "mythril",
     "type": "Informational",
   },
   Object {
@@ -68,6 +74,7 @@ Call at address: 823
     "function": "_function_0x2e1a7d4d",
     "swc_id": "104",
     "title": "Unchecked CALL return value",
+    "tool": "mythril",
     "type": "Informational",
   },
 ]
